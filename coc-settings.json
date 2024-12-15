@@ -1,0 +1,15 @@
+{
+  "languageserver: {
+    "julia": {
+      "julia.environmentPath": null,
+      "julia.executablePath": "julia",
+      "julia.trace.server": "verbose", 
+      "julia.serverArguments": [
+        "--startup-file=no",
+        "--history-file=no",
+        "-e",
+        "using LanguageServer; using SymbolServer; runserver()"
+      ]
+    }
+  }
+}

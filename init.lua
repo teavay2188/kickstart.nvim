@@ -90,6 +90,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- vim.g.latex_to_unicode_auto = 0
+
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -176,10 +178,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -189,6 +191,10 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Julia keybinds
+--vim.api.nvim_set_keymap('n', '<leader>Enter', '<Plug>SlimeRegionSend', {})
+--vim.api.nvim_set_keymap('v', '<leader>Enter', '<Plug>SlimeRegionSend', {})
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -230,6 +236,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'kdheepak/JuliaFormatter.vim',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -254,6 +261,14 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+
+  {
+    'jpalardy/vim-slime',
+    config = function()
+      vim.g.slime_target = 'tmux'
+      vim.g.slime_default_config = { socket_name = 'default', target_pane = '{last}' }
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -650,6 +665,7 @@ require('lazy').setup({
       --
       --  You can press `g?` for help in this menu.
       require('mason').setup()
+      require('lspconfig').julials.setup {}
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.

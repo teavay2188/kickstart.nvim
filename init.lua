@@ -104,7 +104,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -191,6 +191,9 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+--Telekasten keybinds
+vim.keymap.set('n', '<leader>zf', '<cmd>Telekasten find_notes<CR>')
+vim.keymap.set('n', '<leader>zd', '<cmd>Telekasten goto_today<CR>')
 
 -- Julia keybinds
 --vim.api.nvim_set_keymap('n', '<leader>Enter', '<Plug>SlimeRegionSend', {})
@@ -237,14 +240,26 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'kdheepak/JuliaFormatter.vim',
-
+  'renerocksai/calendar-vim',
+  {
+    'renerocksai/telekasten.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim' },
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
   --
   -- Use `opts = {}` to force a plugin to be loaded.
   --
-
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -981,5 +996,94 @@ require('lazy').setup({
   },
 })
 
+require('telekasten').setup {
+  home = vim.fn.expand '~/Documents/notes', -- Put the name of your notes directory here
+  dailies = vim.fn.expand '~/Documents/notes/dailies',
+  weeklies = vim.fn.expand '~/Documents/notes/weeklies',
+  templates = vim.fn.expand '~/Documents/notes/templates',
+  journal_auto_open = true,
+  sort = 'filesname',
+  tag_notation = '#tag',
+  subdirs_in_links = true,
+  dailies_create_nonexisting = true,
+}
+require('render-markdown').setup {
+  heading = {
+    -- Turn on / off heading icon & background rendering
+    enabled = true,
+    -- Turn on / off any sign column related rendering
+    sign = true,
+    -- Determines how icons fill the available space:
+    --  right:   '#'s are concealed and icon is appended to right side
+    --  inline:  '#'s are concealed and icon is inlined on left side
+    --  overlay: icon is left padded with spaces and inserted on left hiding any additional '#'
+    position = 'overlay',
+    -- Replaces '#+' of 'atx_h._marker'
+    -- The number of '#' in the heading determines the 'level'
+    -- The 'level' is used to index into the list using a cycle
+    icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
+    -- Added to the sign column if enabled
+    -- The 'level' is used to index into the list using a cycle
+    signs = { '󰫎 ' },
+    -- Width of the heading background:
+    --  block: width of the heading text
+    --  full:  full width of the window
+    -- Can also be a list of the above values in which case the 'level' is used
+    -- to index into the list using a clamp
+    width = 'full',
+    -- Amount of margin to add to the left of headings
+    -- If a floating point value < 1 is provided it is treated as a percentage of the available window space
+    -- Margin available space is computed after accounting for padding
+    -- Can also be a list of numbers in which case the 'level' is used to index into the list using a clamp
+    left_margin = 0,
+    -- Amount of padding to add to the left of headings
+    -- If a floating point value < 1 is provided it is treated as a percentage of the available window space
+    -- Can also be a list of numbers in which case the 'level' is used to index into the list using a clamp
+    left_pad = 0,
+    -- Amount of padding to add to the right of headings when width is 'block'
+    -- If a floating point value < 1 is provided it is treated as a percentage of the available window space
+    -- Can also be a list of numbers in which case the 'level' is used to index into the list using a clamp
+    right_pad = 0,
+    -- Minimum width to use for headings when width is 'block'
+    -- Can also be a list of integers in which case the 'level' is used to index into the list using a clamp
+    min_width = 0,
+    -- Determines if a border is added above and below headings
+    -- Can also be a list of booleans in which case the 'level' is used to index into the list using a clamp
+    border = false,
+    -- Always use virtual lines for heading borders instead of attempting to use empty lines
+    border_virtual = false,
+    -- Highlight the start of the border using the foreground highlight
+    border_prefix = false,
+    -- Used above heading for border
+    above = '▄',
+    -- Used below heading for border
+    below = '▀',
+    -- The 'level' is used to index into the list using a clamp
+    -- Highlight for the heading icon and extends through the entire line
+    backgrounds = {
+      'RenderMarkdownH1Bg',
+      'RenderMarkdownH2Bg',
+      'RenderMarkdownH3Bg',
+      'RenderMarkdownH4Bg',
+      'RenderMarkdownH5Bg',
+      'RenderMarkdownH6Bg',
+    },
+    -- The 'level' is used to index into the list using a clamp
+    -- Highlight for the heading and sign icons
+    foregrounds = {
+      'RenderMarkdownH1',
+      'RenderMarkdownH2',
+      'RenderMarkdownH3',
+      'RenderMarkdownH4',
+      'RenderMarkdownH5',
+      'RenderMarkdownH6',
+    },
+  },
+  paragraph = {
+    enabled = true,
+    min_width = 0,
+    left_margin = 0,
+  },
+}
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

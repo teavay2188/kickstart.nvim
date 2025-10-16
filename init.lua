@@ -1,5 +1,4 @@
 --[[
-
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -19,71 +18,7 @@
 ========                                                     ========
 =====================================================================
 =====================================================================
-
-What is Kickstart?
-
-  Kickstart.nvim is *not* a distribution.
-
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
-
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
-
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-    If you don't know what this means, type the following:
-      - <escape key>
-      - :
-      - Tutor
-      - <enter key>
-
-    (If you already know the Neovim basics, you can skip this step.)
-
-  Once you've completed that, you can continue working through **AND READING** the rest
-  of the kickstart init.lua.
-
-  Next, run AND READ `:help`.
-    This will open up a help window with some basic information
-    about reading, navigating and searching the builtin help documentation.
-
-    This should be the first place you go to look when you're stuck or confused
-    with something. It's one of my favorite Neovim features.
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-  I have left several `:help X` comments throughout the init.lua
-    These are hints about where to find more information about the relevant settings,
-    plugins or Neovim features used in Kickstart.
-
-   NOTE: Look for lines like this
-
-    Throughout the file. These are for you, the reader, to help you understand what is happening.
-    Feel free to delete them once you know what you're doing, but they should serve as a guide
-    for when you are first encountering a few different constructs in your Neovim config.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now! :)
 --]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -161,6 +96,7 @@ vim.opt.scrolloff = 10
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+vim.keymap.set('i', '<Caps>', '<Esc>')
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -194,6 +130,11 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 --Telekasten keybinds
 vim.keymap.set('n', '<leader>zf', '<cmd>Telekasten find_notes<CR>')
 vim.keymap.set('n', '<leader>zd', '<cmd>Telekasten goto_today<CR>')
+vim.keymap.set('n', '<leader>zw', '<cmd>Telekasten goto_thisweek<CR>')
+vim.keymap.set('n', '<leader>zc', '<cmd>Telekasten show_calendar<CR>')
+vim.keymap.set('n', '<leader>zt', '<cmd>Telekasten new_templated_note<CR>')
+vim.keymap.set('n', '<leader>zn', '<cmd>Telekasten new_note<CR>')
+vim.keymap.set('n', '<leader>z<Enter>', '<cmd>Telekasten toggle_todo<CR>')
 
 -- Julia keybinds
 --vim.api.nvim_set_keymap('n', '<leader>Enter', '<Plug>SlimeRegionSend', {})
@@ -238,6 +179,23 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+  {
+    'nvim-orgmode/orgmode',
+    event = 'VeryLazy',
+    ft = { 'org' },
+    config = function()
+       --Setup orgmode
+      require('orgmode').setup({
+        org_agenda_files = '~/Documents/vault/projects/**/*',
+        org_default_notes_file = '~/Documents/vault/projects/inbox.org',
+        org_todo_keywords = {'TODO(t)', 'NEXT(n)', '|', 'DONE(d)', '|', 'HOLD(h)'},
+        org_todo_keyword_faces = {
+          NEXT = ':foreground orange :weight bold :underline on',
+          HOLD = ':foreground yellow',
+        }
+      })
+    end,
+  },
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'kdheepak/JuliaFormatter.vim',
   'renerocksai/calendar-vim',
@@ -285,6 +243,8 @@ require('lazy').setup({
       vim.g.slime_default_config = { socket_name = 'default', target_pane = '{last}' }
     end,
   },
+  
+
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -405,25 +365,6 @@ require('lazy').setup({
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
-      -- [[ Configure Telescope ]]
-      -- See `:help telescope` and `:help telescope.setup()`
-      require('telescope').setup {
-        -- You can put your default mappings / updates / etc. in here
-        --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
-        extensions = {
-          ['ui-select'] = {
-            require('telescope.themes').get_dropdown(),
-          },
-        },
-      }
-
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
@@ -496,6 +437,24 @@ require('lazy').setup({
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
     },
+    -- LSP for rust
+    {
+      'simrat39/rust-tools.nvim',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      config = function()
+        local rt = require 'rust-tools'
+        rt.setup {
+          server = {
+            on_attach = function(_, bufnr)
+              -- Inlay hints, hover actions, etc.
+              vim.keymap.set('n', 'K', rt.hover_actions.hover_actions, { buffer = bufnr })
+              vim.keymap.set('n', '<Leader>a', rt.code_action_group.code_action_group, { buffer = bufnr })
+            end,
+          },
+        }
+      end,
+    },
+
     config = function()
       -- Brief aside: **What is LSP?**
       --
@@ -928,7 +887,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'verilog' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -997,16 +956,21 @@ require('lazy').setup({
 })
 
 require('telekasten').setup {
-  home = vim.fn.expand '~/Documents/notes', -- Put the name of your notes directory here
-  dailies = vim.fn.expand '~/Documents/notes/dailies',
-  weeklies = vim.fn.expand '~/Documents/notes/weeklies',
-  templates = vim.fn.expand '~/Documents/notes/templates',
+  home = vim.fn.expand '~/Documents/vault/zettelkasten/notes',
+  dailies = vim.fn.expand '~/Documents/vault/zettelkasten/notes/daily',
+  weeklies = vim.fn.expand '~/Documents/vault/zettelkasten/notes/weekly',
+  templates = vim.fn.expand '~/Documents/vault/zettelkasten/notes/templates',
+  template_new_note = 'new_note.md',
+  template_new_daily = 'daily.md',
+  template_new_weekly = 'weekly.md',
   journal_auto_open = true,
-  sort = 'filesname',
+  sort = 'filename',
   tag_notation = '#tag',
   subdirs_in_links = true,
   dailies_create_nonexisting = true,
 }
+
+
 require('render-markdown').setup {
   heading = {
     -- Turn on / off heading icon & background rendering

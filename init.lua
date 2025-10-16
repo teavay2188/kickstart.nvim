@@ -192,6 +192,9 @@ require('lazy').setup({
         org_todo_keyword_faces = {
           NEXT = ':foreground orange :weight bold :underline on',
           HOLD = ':foreground yellow',
+        },
+        mappings = {
+          org_return_uses_meta_return = true
         }
       })
     end,
@@ -234,14 +237,6 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
-  },
-
-  {
-    'jpalardy/vim-slime',
-    config = function()
-      vim.g.slime_target = 'tmux'
-      vim.g.slime_default_config = { socket_name = 'default', target_pane = '{last}' }
-    end,
   },
   
 

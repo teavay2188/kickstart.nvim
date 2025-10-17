@@ -180,6 +180,43 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   {
+    'Vigemus/iron.nvim',
+    config = function()
+      local iron = require("iron.core")
+      local view = require("iron.view")
+      iron.setup {
+        config = {
+          scratch_repl = true,
+          repl_definition = {
+            julia = {
+              command = {"julia"},
+              block_dividers = {"# %%", "#%%"}
+            },
+          },
+          -- size of the windwow(number of lines)
+          repl_open_cmd = view.bottom(20),
+        },
+        keymaps = {
+          toggle_repl = "<space>rr",
+          visual_send = "<space><CR>",
+          send_line = "<space>l",
+          send_file = "<space>f",
+          send_motion = "<space>m",
+          exit = "<space>q",
+          clear = "<space>c",
+          interrupt = "<space>s<space>",
+        },
+        highlight = {
+          italic = false
+        },
+        ignore_blank_lines = true,
+      }
+      vim.keymap.set('n', '<space>j', function()
+        iron.send_paragraph()
+      end, {desc = 'Send paragraph'})
+      end
+  },
+  {
     'nvim-orgmode/orgmode',
     event = 'VeryLazy',
     ft = { 'org' },

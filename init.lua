@@ -86,7 +86,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --
 --vim.lsp.enable 'julials'
 --vim.lsp.config 'julials'
-
+vim.lsp.enable 'julials'
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -189,6 +189,8 @@ vim.diagnostic.config {
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
   jump = { float = true },
 }
+
+-- LuaSnip for latex snippits
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -602,6 +604,7 @@ require('lazy').setup({
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
+      -- local home = os.getenv 'HOME'
       local servers = {
         clangd = {},
         gopls = {},
@@ -611,19 +614,7 @@ require('lazy').setup({
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
-        --julials = {
-        -- cmd = {
-        --  'julia',
-        -- '--startup-file=no',
-        --'--history-file=no',
-        --'-e',
-        ---[[
-        --   using LanguageServer, SymbolServer;
-        --  runserver()
-        -- ]],
-        --},
-        -- filetypes = { 'julia' },
-        --},
+
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
 
@@ -967,4 +958,23 @@ require('lazy').setup({
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
+require('luasnip.loaders.from_lua').load {
+  paths = vim.fn.stdpath 'config' .. '/LuaSnip/',
+}
+
+--require('luasnip').config.set.config {
+--enable_autosnippets = true,
+--store_selection_keys = '<Tab',
+--}
+
+vim.cmd [[
+" Use Tab to expand and jump through snippets
+imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
+smap <silent><expr> <Tab> luasnip#jumpable(1) ? '<Plug>luasnip-jump-next' : '<Tab>'
+
+" Use Shift-Tab to jump backwards through snippets
+imap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+smap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+]]
+
 -- vim: ts=2 sts=2 sw=2 et

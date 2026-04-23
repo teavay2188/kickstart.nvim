@@ -9,7 +9,7 @@ return {
         org_default_notes_file = '~/vault/projects/refile.org',
         org_todo_keywords = { 'TODO(t)', 'NEXT(n)', '|', 'DONE(d)', '|', 'HOLD(h)' },
         org_todo_keyword_faces = {
-	DONE = ':foreground green',
+          DONE = ':foreground green',
           NEXT = ':foreground orange :weight bold :underline on',
           HOLD = ':foreground yellow',
         },
@@ -35,8 +35,8 @@ return {
     },
   },
   {
-    "L3MON4D3/LuaSnip",
-    version = "v2.*",
-    build = "make install_jsregexp",
+    'L3MON4D3/LuaSnip',
+    version = 'v2.*',
+    build = 'make install_jsregexp', -- optional, for regex snippets
   },
 }

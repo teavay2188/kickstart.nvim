@@ -86,7 +86,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --
 --vim.lsp.enable 'julials'
 --vim.lsp.config 'julials'
-
+vim.lsp.enable 'julials'
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -189,6 +189,8 @@ vim.diagnostic.config {
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
   jump = { float = true },
 }
+
+-- LuaSnip for latex snippits
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -602,6 +604,7 @@ require('lazy').setup({
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
+      -- local home = os.getenv 'HOME'
       local servers = {
         clangd = {},
         gopls = {},
@@ -624,6 +627,7 @@ require('lazy').setup({
         --},
         -- filetypes = { 'julia' },
         --},
+
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
 
@@ -907,29 +911,7 @@ require('lazy').setup({
       -- ensure basic parser are installed
       local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
       require('nvim-treesitter').install(parsers)
-
-      ---@param buf integer
-      ---@param language string
-      local function treesitter_try_attach(buf, language)
-        -- check if parser exists and load it
-        if not vim.treesitter.language.add(language) then return end
-        -- enables syntax highlighting and other treesitter features
-        vim.treesitter.start(buf, language)
-
-        -- enables treesitter based folds
-        -- for more info on folds see `:help folds`
-        -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-        -- vim.wo.foldmethod = 'expr'
-
-        -- check if treesitter indentation is available for this language, and if so enable it
-        -- in case there is no indent query, the indentexpr will fallback to the vim's built in one
-        local has_indent_query = vim.treesitter.query.get(language, 'indents') ~= nil
-
-        -- enables treesitter based indentation
-        if has_indent_query then vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" end
-      end
-
-      local available_parsers = require('nvim-treesitter').get_available()
+      require('nvim-treesitter').setup { install_dir = vim.fn.stdpath 'data' .. '/site' }
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
           local buf, filetype = args.buf, args.match
@@ -1004,4 +986,23 @@ require('lazy').setup({
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
+require('luasnip.loaders.from_lua').load {
+  paths = vim.fn.stdpath 'config' .. '/LuaSnip/',
+}
+
+--require('luasnip').config.set.config {
+--enable_autosnippets = true,
+--store_selection_keys = '<Tab',
+--}
+
+vim.cmd [[
+" Use Tab to expand and jump through snippets
+imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
+smap <silent><expr> <Tab> luasnip#jumpable(1) ? '<Plug>luasnip-jump-next' : '<Tab>'
+
+" Use Shift-Tab to jump backwards through snippets
+imap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+smap <silent><expr> <S-Tab> luasnip#jumpable(-1) ? '<Plug>luasnip-jump-prev' : '<S-Tab>'
+]]
+
 -- vim: ts=2 sts=2 sw=2 et

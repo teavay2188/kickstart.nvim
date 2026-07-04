@@ -3,32 +3,10 @@
 --
 -- See the kickstart.nvim README for more information
 
----@module 'lazy'
----@type LazySpec
-return {
-  {
-    'stevearc/conform.nvim',
-    opts = {},
-    config = function()
-      require('conform').setup {
-        formatters_by_ft = {
-          lua = { 'stylua' },
-        },
-      }
-    end,
-  },
-  {
-    -- add this to your lua/plugins.lua, lua/plugins/init.lua,  or the file you keep your other plugins:
-    'numToStr/Comment.nvim',
-    opts = {
-      -- add any options here
-    },
-    config = function() require('Comment').setup {
-            padding = true,
-            opleader = {
-                line = 'gc',
-                block = 'gb',
-            },
-        } end,
-  },
-}
+local plugins_dir = vim.fs.joinpath(vim.fn.stdpath 'config', 'lua', 'custom', 'plugins')
+for file_name, type in vim.fs.dir(plugins_dir, { follow = true }) do
+  if (type == 'file' or type == 'link') and file_name:match '%.lua$' and file_name ~= 'init.lua' then
+    local module = file_name:gsub('%.lua$', '')
+    require('custom.plugins.' .. module)
+  end
+end

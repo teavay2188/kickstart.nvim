@@ -1,2 +1,17 @@
 local u = require 'utils'
-local s, sn, t, i, f, d, fmt, fmta, rep = u.s, u.sn, u.t, u.i, u.f, u.d, u.fmt, u.fmta, u.rep
+local s, i, fmta = u.s, u.i, u.fmta
+
+return {
+  s(
+    { trig = 'ckt', name = 'CircuitikZ diagram', dscr = 'CircuitikZ environment: options, circuit' },
+    fmta(
+      [[
+\begin{circuitikz}[<>]
+  <>
+\end{circuitikz}
+<>
+]],
+      { i(1, 'american'), i(2), i(0) }
+    )
+  ),
+}

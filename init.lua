@@ -692,9 +692,11 @@ do
   --  See `:help lsp-config` for information about keys and how to configure
   ---@type table<string, vim.lsp.Config>
   local servers = {
-    -- clangd = {},
+    clangd = {},
     -- gopls = {},
     pyright = {},
+    tclsp = {},
+    texlab = {},
     -- julia_ls = {},
     -- rust_analyzer = {},
     --
@@ -761,6 +763,7 @@ do
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    'latexindent',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -786,8 +789,9 @@ do
         lua = true,
         python = true,
         julia = true,
-        sytemverilog = true,
+        systemverilog = true,
         verilog = true,
+        tex = true,
       }
       if enabled_filetypes[vim.bo[bufnr].filetype] then
         return { timeout_ms = 500 }
@@ -800,6 +804,9 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
+      verilog = { 'verible', lsp_format = 'never' },
+      systemverilog = { 'verible', lsp_format = 'never' },
+      tex = { 'latexindent' },
       -- rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
@@ -808,6 +815,17 @@ do
       -- javascript = { "prettierd", "prettier", stop_after_first = true },
     },
   }
+
+  vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('verilog-indentation', { clear = true }),
+    pattern = { 'verilog', 'systemverilog' },
+    callback = function()
+      vim.opt_local.expandtab = true
+      vim.opt_local.shiftwidth = 2
+      vim.opt_local.softtabstop = 2
+      vim.opt_local.tabstop = 2
+    end,
+  })
 
   vim.keymap.set({ 'n', 'v' }, '<leader>f', function() require('conform').format { async = true } end, { desc = '[F]ormat buffer' })
 end
@@ -981,6 +999,7 @@ do
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   require 'custom.plugins.notes'
+  require 'custom.plugins.slime'
 end
 
 -- Julia LSP setup

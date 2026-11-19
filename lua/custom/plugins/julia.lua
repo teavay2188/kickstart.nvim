@@ -1,10 +1,10 @@
 local jetls_path = vim.fn.expand '~/.julia/bin/jetls'
 
 return {
-  cmd = { 'jetls', 'serve' },
+  cmd = { jetls_path, 'serve' },
   filetypes = { 'julia' },
-  root_mrkers = { 'Project.toms', 'JuliaProject.toml', '.git' },
-  setting = {
+  root_markers = { 'Project.toml', 'JuliaProject.toml', '.git' },
+  settings = {
     code_lens = {
       references = true,
     },
